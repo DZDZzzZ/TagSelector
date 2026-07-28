@@ -5,15 +5,13 @@ let selectedTags = [];
 
 
 
-// =======================
-// 加载JSON
-// =======================
-
+// ===============================
+// 加载 JSON
+// ===============================
 
 fetch("./tags.json")
 
-.then(response=>{
-
+.then(response => {
 
     if(!response.ok){
 
@@ -23,26 +21,26 @@ fetch("./tags.json")
 
     }
 
-
     return response.json();
-
 
 })
 
-.then(data=>{
+.then(data => {
 
 
-    tagData=data;
+    tagData = data;
 
 
     loadCategories();
 
     loadRandomCategories();
 
+    buildSearchIndex();
+
 
 })
 
-.catch(error=>{
+.catch(error => {
 
 
     console.error(error);
@@ -55,58 +53,57 @@ fetch("./tags.json")
 
 
 
-
-// =======================
-// 一级分类
-// =======================
-
+// ===============================
+// 加载一级分类
+// ===============================
 
 function loadCategories(){
 
 
-const box =
-document.getElementById(
-"categories"
-);
+    const box =
+    document.getElementById(
+        "categories"
+    );
 
 
-box.innerHTML="";
+    box.innerHTML = "";
 
 
-
-Object.keys(tagData)
-.forEach(category=>{
-
-
-let div =
-document.createElement(
-"div"
-);
+    Object.keys(tagData)
+    .forEach(category => {
 
 
-
-div.className="category";
-
-
-div.innerText=category;
-
+        let div =
+        document.createElement(
+            "div"
+        );
 
 
-div.onclick=()=>{
+        div.className =
+        "category";
 
 
-showCategory(category);
-
-
-};
+        div.innerText =
+        category;
 
 
 
-box.appendChild(div);
+        div.onclick = ()=>{
+
+
+            showCategory(
+                category
+            );
+
+
+        };
 
 
 
-});
+        box.appendChild(div);
+
+
+    });
 
 
 }
@@ -118,116 +115,87 @@ box.appendChild(div);
 
 
 
-// =======================
-// 显示标签
-// =======================
-
+// ===============================
+// 显示分类内容
+// ===============================
 
 function showCategory(category){
 
 
-document.getElementById(
-"category-title"
-)
-.innerText=category;
+    document.getElementById(
+        "category-title"
+    )
+    .innerText =
+    category;
 
 
 
-let box =
-document.getElementById(
-"tags"
-);
+    const box =
+    document.getElementById(
+        "tags"
+    );
+
+
+    box.innerHTML = "";
 
 
 
-box.innerHTML="";
+    let groups =
+    tagData[category];
 
 
 
-let groups =
-tagData[category];
+    Object.keys(groups)
+    .forEach(group=>{
 
 
-
-Object.keys(groups)
-.forEach(group=>{
-
-
-let title =
-document.createElement(
-"h3"
-);
+        let title =
+        document.createElement(
+            "h3"
+        );
 
 
-title.style.width="100%";
+        title.style.width =
+        "100%";
 
-title.innerText=group;
+
+        title.innerText =
+        group;
 
 
-box.appendChild(title);
-
+        box.appendChild(title);
 
 
 
 
-groups[group]
-.forEach(item=>{
+        groups[group]
+        .forEach(item=>{
 
 
-let english =
-Object.keys(item)[0];
+            let english =
+            Object.keys(item)[0];
 
 
-let chinese =
-item[english];
-
-
-
-let btn =
-document.createElement(
-"div"
-);
+            let chinese =
+            item[english];
 
 
 
-btn.className="tag";
+            createTagButton(
+                english,
+                chinese,
+                box
+            );
 
 
-btn.innerText=chinese;
+        });
 
 
-
-btn.dataset.tag=
-english;
-
-
-
-btn.onclick=()=>{
-
-
-toggleTag(
-english,
-chinese,
-btn
-);
-
-
-};
+    });
 
 
 
-box.appendChild(btn);
-
-
-
-});
-
-
-});
-
-
-
-refreshButtons();
+    refreshButtons();
 
 
 }
@@ -238,64 +206,54 @@ refreshButtons();
 
 
 
-// =======================
-// 选择TAG
-// =======================
 
 
-function toggleTag(
-tag,
-chinese,
-element
+// ===============================
+// 创建TAG按钮
+// ===============================
+
+function createTagButton(
+    english,
+    chinese,
+    parent
 ){
 
 
-let index =
-selectedTags.findIndex(
-x=>x.tag===tag
-);
+    let btn =
+    document.createElement(
+        "div"
+    );
+
+
+    btn.className =
+    "tag";
+
+
+    btn.innerText =
+    chinese;
 
 
 
-if(index!==-1){
-
-
-selectedTags.splice(
-index,
-1
-);
-
-
-element.classList.remove(
-"selected"
-);
+    btn.dataset.tag =
+    english;
 
 
 
-}
-else{
+    btn.onclick = ()=>{
 
 
-selectedTags.push({
-
-tag:tag,
-
-chinese:chinese
-
-});
+        toggleTag(
+            english,
+            chinese,
+            btn
+        );
 
 
-element.classList.add(
-"selected"
-);
+    };
 
 
 
-}
-
-
-
-updateSelected();
+    parent.appendChild(btn);
 
 
 }
@@ -306,84 +264,148 @@ updateSelected();
 
 
 
-// =======================
+
+// ===============================
+// 选择 / 取消 TAG
+// ===============================
+
+function toggleTag(
+    tag,
+    chinese,
+    element
+){
+
+
+    let index =
+    selectedTags.findIndex(
+        x =>
+        x.tag === tag
+    );
+
+
+
+    if(index !== -1){
+
+
+        selectedTags.splice(
+            index,
+            1
+        );
+
+
+    }
+
+    else{
+
+
+        selectedTags.push({
+
+            tag: tag,
+
+            chinese: chinese
+
+        });
+
+
+    }
+
+
+
+    updateSelected();
+
+
+    refreshButtons();
+
+
+}
+
+
+
+
+
+
+
+
+
+// ===============================
 // 更新右侧
-// =======================
-
+// ===============================
 
 function updateSelected(){
 
 
-let box =
-document.getElementById(
-"selected-tags"
-);
+    const box =
+    document.getElementById(
+        "selected-tags"
+    );
+
+
+    box.innerHTML = "";
 
 
 
-box.innerHTML="";
+    selectedTags.forEach(item=>{
+
+
+        let div =
+        document.createElement(
+            "div"
+        );
+
+
+        div.className =
+        "selected-item";
 
 
 
-selectedTags.forEach(item=>{
-
-
-let div =
-document.createElement(
-"div"
-);
+        div.innerText =
+        item.chinese;
 
 
 
-div.className=
-"selected-item";
+        div.onclick = ()=>{
+
+
+            let index =
+            selectedTags.findIndex(
+                x =>
+                x.tag === item.tag
+            );
+
+
+            if(index !== -1){
+
+                selectedTags.splice(
+                    index,
+                    1
+                );
+
+            }
+
+
+            updateSelected();
+
+            refreshButtons();
+
+
+        };
 
 
 
-div.innerText=
-item.chinese;
+        box.appendChild(div);
 
 
 
-div.onclick=()=>{
-
-
-let index =
-selectedTags.findIndex(
-x=>x.tag===item.tag
-);
+    });
 
 
 
-selectedTags.splice(
-index,
-1
-);
+    document.getElementById(
+        "count"
+    )
+    .innerText =
+    selectedTags.length;
 
-
-
-updateSelected();
-
-refreshButtons();
-
-
-};
-
-
-
-box.appendChild(div);
-
-
-
-});
-
-
-
-document.getElementById(
-"count"
-)
-.innerText=
-selectedTags.length;
 
 
 }
@@ -394,53 +416,57 @@ selectedTags.length;
 
 
 
-// =======================
-// 更新按钮状态
-// =======================
 
+
+// ===============================
+// 刷新按钮状态
+// ===============================
 
 function refreshButtons(){
 
 
-document
-.querySelectorAll(".tag")
-.forEach(btn=>{
+    document
+    .querySelectorAll(
+        ".tag"
+    )
+    .forEach(btn=>{
 
 
-let exists =
-selectedTags.some(
-x=>
-x.tag===btn.dataset.tag
-);
+        let exists =
+        selectedTags.some(
+            x =>
+            x.tag ===
+            btn.dataset.tag
+        );
 
 
 
-if(exists){
+        if(exists){
 
 
-btn.classList.add(
-"selected"
-);
+            btn.classList.add(
+                "selected"
+            );
+
+
+        }
+        else{
+
+
+            btn.classList.remove(
+                "selected"
+            );
+
+
+        }
+
+
+
+    });
 
 
 
 }
-else{
-
-
-btn.classList.remove(
-"selected"
-);
-
-
-
-}
-
-
-});
-
-
-}
 
 
 
@@ -448,36 +474,40 @@ btn.classList.remove(
 
 
 
-// =======================
-// 复制
-// =======================
 
+// ===============================
+// 复制 Prompt
+// ===============================
 
 document
 .getElementById(
-"copy-btn"
+    "copy-btn"
 )
-.onclick=()=>{
+.onclick = ()=>{
 
 
-let text =
-selectedTags
-.map(
-item=>
-item.tag.replaceAll(
-"_",
-" "
-)
-)
-.join(
-", "
-);
+    let text =
+    selectedTags
+    .map(item=>{
+
+
+        return item.tag
+        .replaceAll(
+            "_",
+            " "
+        );
+
+
+    })
+    .join(
+        ", "
+    );
 
 
 
-navigator.clipboard.writeText(
-text
-);
+    navigator.clipboard.writeText(
+        text
+    );
 
 
 };
@@ -488,25 +518,25 @@ text
 
 
 
-// =======================
+
+// ===============================
 // 清空
-// =======================
-
+// ===============================
 
 document
 .getElementById(
-"clear-btn"
+    "clear-btn"
 )
-.onclick=()=>{
+.onclick = ()=>{
 
 
-selectedTags=[];
+    selectedTags = [];
 
 
-updateSelected();
+    updateSelected();
 
 
-refreshButtons();
+    refreshButtons();
 
 
 };
@@ -519,72 +549,71 @@ refreshButtons();
 
 
 
-// =======================
+// ===============================
 // 随机分类选择
-// =======================
-
+// ===============================
 
 function loadRandomCategories(){
 
 
-let box =
-document.getElementById(
-"random-categories"
-);
+    const box =
+    document.getElementById(
+        "random-categories"
+    );
+
+
+    box.innerHTML = "";
 
 
 
-box.innerHTML="";
+    Object.keys(tagData)
+    .forEach(category=>{
+
+
+        let label =
+        document.createElement(
+            "label"
+        );
+
+
+        label.className =
+        "random-item";
 
 
 
-Object.keys(tagData)
-.forEach(category=>{
+        let input =
+        document.createElement(
+            "input"
+        );
 
 
-let label =
-document.createElement(
-"label"
-);
+        input.type =
+        "checkbox";
 
 
-
-label.className=
-"random-item";
-
-
-
-let input =
-document.createElement(
-"input"
-);
+        input.value =
+        category;
 
 
 
-input.type="checkbox";
+        label.appendChild(
+            input
+        );
 
 
-input.value=category;
-
-
-
-label.appendChild(input);
-
-
-
-label.appendChild(
-document.createTextNode(
-category
-)
-);
+        label.appendChild(
+            document.createTextNode(
+                category
+            )
+        );
 
 
 
-box.appendChild(label);
+        box.appendChild(label);
 
 
 
-});
+    });
 
 
 }
@@ -595,145 +624,329 @@ box.appendChild(label);
 
 
 
-// =======================
-// 随机按钮
-// =======================
 
+// ===============================
+// 每个分类随机一个
+// ===============================
 
 document
 .getElementById(
-"random-btn"
+    "random-btn"
 )
-.onclick=()=>{
+.onclick = ()=>{
 
 
-let checked =
-[
-...
-document
-.querySelectorAll(
-"#random-categories input:checked"
-)
-];
+    let checked =
+    [
+        ...
+        document
+        .querySelectorAll(
+            "#random-categories input:checked"
+        )
+    ];
 
 
 
-if(
-checked.length===0
-){
+    if(
+        checked.length === 0
+    ){
 
+        alert(
+            "请选择随机分类"
+        );
 
-alert(
-"请选择随机分类"
-);
+        return;
 
+    }
 
-return;
 
 
-}
 
+    checked.forEach(box=>{
 
 
+        let category =
+        box.value;
 
-// 随机一级分类
 
 
-let category =
-checked[
-Math.floor(
-Math.random()
-*
-checked.length
-)
-]
-.value;
+        let groups =
+        tagData[category];
 
 
 
-let groups =
-tagData[category];
+        let allTags = [];
 
 
 
-let allTags=[];
+        Object.values(groups)
+        .forEach(group=>{
 
 
+            group.forEach(item=>{
 
-Object.values(groups)
-.forEach(group=>{
 
+                let tag =
+                Object.keys(item)[0];
 
-group.forEach(item=>{
 
+                let chinese =
+                item[tag];
 
-let tag =
-Object.keys(item)[0];
 
 
-let chinese =
-item[tag];
+                allTags.push({
 
+                    tag:tag,
 
+                    chinese:chinese
 
-allTags.push({
+                });
 
-tag:tag,
 
-chinese:chinese
+            });
 
-});
 
+        });
 
 
-});
 
 
-});
+        if(allTags.length > 0){
 
 
+            let result =
+            allTags[
+                Math.floor(
+                    Math.random()
+                    *
+                    allTags.length
+                )
+            ];
 
 
 
+            let exists =
+            selectedTags.some(
+                x =>
+                x.tag === result.tag
+            );
 
-let result =
-allTags[
-Math.floor(
-Math.random()
-*
-allTags.length
-)
-];
 
 
+            if(!exists){
 
-if(result){
 
+                selectedTags.push(
+                    result
+                );
 
-let exists =
-selectedTags.some(
-x=>x.tag===result.tag
-);
 
+            }
 
 
-if(!exists){
+        }
 
 
-selectedTags.push(result);
 
+    });
 
-updateSelected();
 
 
-refreshButtons();
+    updateSelected();
 
-
-}
-
-
-}
+    refreshButtons();
 
 
 
 };
+
+
+
+
+
+
+
+
+
+// ===============================
+// 搜索索引
+// ===============================
+
+let searchIndex = [];
+
+
+
+function buildSearchIndex(){
+
+
+    searchIndex = [];
+
+
+
+    Object.keys(tagData)
+    .forEach(category=>{
+
+
+        Object.values(
+            tagData[category]
+        )
+        .forEach(group=>{
+
+
+            group.forEach(item=>{
+
+
+                let tag =
+                Object.keys(item)[0];
+
+
+                let chinese =
+                item[tag];
+
+
+
+                searchIndex.push({
+
+                    tag:tag,
+
+                    chinese:chinese,
+
+                    category:category
+
+                });
+
+
+            });
+
+
+        });
+
+
+    });
+
+
+
+}
+
+
+
+
+
+
+
+
+// ===============================
+// 中文搜索
+// ===============================
+
+document
+.getElementById(
+    "search-input"
+)
+.addEventListener(
+    "input",
+    function(){
+
+
+        let keyword =
+        this.value.trim();
+
+
+
+        let box =
+        document.getElementById(
+            "search-results"
+        );
+
+
+        box.innerHTML = "";
+
+
+
+        if(!keyword){
+
+            return;
+
+        }
+
+
+
+        let results =
+        searchIndex.filter(
+            item =>
+            item.chinese
+            .includes(keyword)
+        )
+        .slice(
+            0,
+            50
+        );
+
+
+
+        results.forEach(item=>{
+
+
+            let div =
+            document.createElement(
+                "div"
+            );
+
+
+            div.className =
+            "search-item";
+
+
+
+            div.innerText =
+            item.chinese;
+
+
+
+            div.onclick = ()=>{
+
+
+                let exists =
+                selectedTags.some(
+                    x =>
+                    x.tag === item.tag
+                );
+
+
+
+                if(!exists){
+
+
+                    selectedTags.push({
+
+                        tag:item.tag,
+
+                        chinese:item.chinese
+
+                    });
+
+
+
+                    updateSelected();
+
+                    refreshButtons();
+
+
+                }
+
+
+            };
+
+
+
+            box.appendChild(div);
+
+
+
+        });
+
+
+
+    }
+);
