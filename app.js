@@ -2,49 +2,41 @@ let tagData = {};
 
 let selectedTags = [];
 
+let searchIndex = [];
+
+let categoryTags = {};
 
 
 
-// ===============================
+
+
+// ==========================
 // 加载 JSON
-// ===============================
+// ==========================
 
 fetch("./tags.json")
 
-.then(response => {
+.then(r=>r.json())
 
-    if(!response.ok){
+.then(data=>{
 
-        throw new Error(
-            "tags.json加载失败"
-        );
-
-    }
-
-    return response.json();
-
-})
-
-.then(data => {
+    tagData=data;
 
 
-    tagData = data;
+    buildCategoryIndex();
 
+    buildSearchIndex();
 
     loadCategories();
 
     loadRandomCategories();
 
-    buildSearchIndex();
-
 
 })
 
-.catch(error => {
+.catch(e=>{
 
-
-    console.error(error);
-
+    console.error(e);
 
 });
 
@@ -53,24 +45,130 @@ fetch("./tags.json")
 
 
 
-// ===============================
-// 加载一级分类
-// ===============================
+
+
+// ==========================
+// 递归解析所有tag
+// ==========================
+
+function scanTags(
+    obj,
+    path=[]
+){
+
+    let result=[];
+
+
+    Object.entries(obj)
+    .forEach(([key,value])=>{
+
+
+        if(
+            typeof value === "string"
+        ){
+
+            result.push({
+
+                tag:key,
+
+                chinese:value,
+
+                path:path
+
+            });
+
+
+        }
+
+
+        else if(
+            typeof value === "object"
+        ){
+
+
+            result.push(
+                ...scanTags(
+                    value,
+                    [
+                        ...path,
+                        key
+                    ]
+                )
+            );
+
+
+        }
+
+
+
+    });
+
+
+    return result;
+
+}
+
+
+
+
+
+
+
+
+// ==========================
+// 建立分类索引
+// ==========================
+
+function buildCategoryIndex(){
+
+
+    categoryTags={};
+
+
+
+    Object.keys(tagData)
+    .forEach(category=>{
+
+
+        categoryTags[category] =
+        scanTags(
+            tagData[category],
+            [
+                category
+            ]
+        );
+
+
+    });
+
+
+}
+
+
+
+
+
+
+
+
+// ==========================
+// 左侧分类
+// ==========================
 
 function loadCategories(){
 
 
-    const box =
+    let box =
     document.getElementById(
         "categories"
     );
 
 
-    box.innerHTML = "";
+    box.innerHTML="";
 
 
-    Object.keys(tagData)
-    .forEach(category => {
+    Object.keys(categoryTags)
+    .forEach(category=>{
 
 
         let div =
@@ -79,25 +177,20 @@ function loadCategories(){
         );
 
 
-        div.className =
-        "category";
+        div.className="category";
 
 
-        div.innerText =
+        div.innerText=
         category;
 
 
+        div.onclick=()=>{
 
-        div.onclick = ()=>{
 
-
-            showCategory(
-                category
-            );
+            showCategory(category);
 
 
         };
-
 
 
         box.appendChild(div);
@@ -115,84 +208,45 @@ function loadCategories(){
 
 
 
-// ===============================
-// 显示分类内容
-// ===============================
+
+// ==========================
+// 显示分类tag
+// ==========================
 
 function showCategory(category){
 
 
-    document.getElementById(
+    document
+    .getElementById(
         "category-title"
     )
-    .innerText =
+    .innerText=
     category;
 
 
 
-    const box =
+    let box =
     document.getElementById(
         "tags"
     );
 
 
-    box.innerHTML = "";
+    box.innerHTML="";
 
 
 
-    let groups =
-    tagData[category];
+    categoryTags[category]
+    .forEach(item=>{
 
 
-
-    Object.keys(groups)
-    .forEach(group=>{
-
-
-        let title =
-        document.createElement(
-            "h3"
+        createTagButton(
+            item.tag,
+            item.chinese,
+            box
         );
 
 
-        title.style.width =
-        "100%";
-
-
-        title.innerText =
-        group;
-
-
-        box.appendChild(title);
-
-
-
-
-        groups[group]
-        .forEach(item=>{
-
-
-            let english =
-            Object.keys(item)[0];
-
-
-            let chinese =
-            item[english];
-
-
-
-            createTagButton(
-                english,
-                chinese,
-                box
-            );
-
-
-        });
-
-
     });
-
 
 
     refreshButtons();
@@ -208,52 +262,47 @@ function showCategory(category){
 
 
 
-// ===============================
-// 创建TAG按钮
-// ===============================
+// ==========================
+// 创建tag按钮
+// ==========================
 
 function createTagButton(
-    english,
+    tag,
     chinese,
     parent
 ){
 
 
-    let btn =
+    let div =
     document.createElement(
         "div"
     );
 
 
-    btn.className =
-    "tag";
+    div.className="tag";
 
 
-    btn.innerText =
+    div.innerText=
     chinese;
 
 
-
-    btn.dataset.tag =
-    english;
-
+    div.dataset.tag=
+    tag;
 
 
-    btn.onclick = ()=>{
+    div.onclick=()=>{
 
 
         toggleTag(
-            english,
-            chinese,
-            btn
+            tag,
+            chinese
         );
 
 
     };
 
 
-
-    parent.appendChild(btn);
+    parent.appendChild(div);
 
 
 }
@@ -265,26 +314,24 @@ function createTagButton(
 
 
 
-// ===============================
-// 选择 / 取消 TAG
-// ===============================
+
+// ==========================
+// 添加/删除tag
+// ==========================
 
 function toggleTag(
     tag,
-    chinese,
-    element
+    chinese
 ){
 
 
     let index =
     selectedTags.findIndex(
-        x =>
-        x.tag === tag
+        x=>x.tag===tag
     );
 
 
-
-    if(index !== -1){
+    if(index>=0){
 
 
         selectedTags.splice(
@@ -294,15 +341,14 @@ function toggleTag(
 
 
     }
-
     else{
 
 
         selectedTags.push({
 
-            tag: tag,
+            tag:tag,
 
-            chinese: chinese
+            chinese:chinese
 
         });
 
@@ -310,9 +356,7 @@ function toggleTag(
     }
 
 
-
     updateSelected();
-
 
     refreshButtons();
 
@@ -327,20 +371,20 @@ function toggleTag(
 
 
 
-// ===============================
-// 更新右侧
-// ===============================
+// ==========================
+// 右侧列表
+// ==========================
 
 function updateSelected(){
 
 
-    const box =
+    let box =
     document.getElementById(
         "selected-tags"
     );
 
 
-    box.innerHTML = "";
+    box.innerHTML="";
 
 
 
@@ -353,34 +397,23 @@ function updateSelected(){
         );
 
 
-        div.className =
+        div.className=
         "selected-item";
 
 
-
-        div.innerText =
+        div.innerText=
         item.chinese;
 
 
 
-        div.onclick = ()=>{
+        div.onclick=()=>{
 
 
-            let index =
-            selectedTags.findIndex(
-                x =>
-                x.tag === item.tag
+            selectedTags =
+            selectedTags.filter(
+                x=>
+                x.tag!==item.tag
             );
-
-
-            if(index !== -1){
-
-                selectedTags.splice(
-                    index,
-                    1
-                );
-
-            }
 
 
             updateSelected();
@@ -391,21 +424,19 @@ function updateSelected(){
         };
 
 
-
         box.appendChild(div);
-
 
 
     });
 
 
 
-    document.getElementById(
+    document
+    .getElementById(
         "count"
     )
-    .innerText =
+    .innerText=
     selectedTags.length;
-
 
 
 }
@@ -418,9 +449,9 @@ function updateSelected(){
 
 
 
-// ===============================
-// 刷新按钮状态
-// ===============================
+// ==========================
+// 更新按钮状态
+// ==========================
 
 function refreshButtons(){
 
@@ -432,38 +463,21 @@ function refreshButtons(){
     .forEach(btn=>{
 
 
-        let exists =
+        let exist =
         selectedTags.some(
-            x =>
-            x.tag ===
+            x=>
+            x.tag===
             btn.dataset.tag
         );
 
 
-
-        if(exists){
-
-
-            btn.classList.add(
-                "selected"
-            );
-
-
-        }
-        else{
-
-
-            btn.classList.remove(
-                "selected"
-            );
-
-
-        }
-
+        btn.classList.toggle(
+            "selected",
+            exist
+        );
 
 
     });
-
 
 
 }
@@ -475,33 +489,263 @@ function refreshButtons(){
 
 
 
-// ===============================
-// 复制 Prompt
-// ===============================
+
+// ==========================
+// 搜索
+// ==========================
+
+function buildSearchIndex(){
+
+
+    searchIndex =
+    scanTags(tagData);
+
+
+}
+
+
+
+document
+.getElementById(
+    "search-input"
+)
+.addEventListener(
+    "input",
+    e=>{
+
+
+        let key =
+        e.target.value.trim();
+
+
+
+        let box =
+        document.getElementById(
+            "search-results"
+        );
+
+
+        box.innerHTML="";
+
+
+
+        if(!key)
+            return;
+
+
+
+        searchIndex
+        .filter(
+            x=>
+            x.chinese.includes(key)
+        )
+        .slice(0,50)
+        .forEach(item=>{
+
+
+            let div =
+            document.createElement(
+                "div"
+            );
+
+
+            div.className=
+            "search-item";
+
+
+            div.innerText=
+            item.chinese;
+
+
+
+            div.onclick=()=>{
+
+
+                toggleTag(
+                    item.tag,
+                    item.chinese
+                );
+
+
+            };
+
+
+            box.appendChild(div);
+
+
+
+        });
+
+
+
+    }
+);
+
+
+
+
+
+
+
+
+
+// ==========================
+// 随机分类
+// ==========================
+
+function loadRandomCategories(){
+
+
+    let box =
+    document.getElementById(
+        "random-categories"
+    );
+
+
+    box.innerHTML="";
+
+
+
+    Object.keys(categoryTags)
+    .forEach(category=>{
+
+
+        let label =
+        document.createElement(
+            "label"
+        );
+
+
+        label.className=
+        "random-item";
+
+
+
+        label.innerHTML=
+        `
+        <input type="checkbox"
+        value="${category}">
+        ${category}
+        `;
+
+
+        box.appendChild(label);
+
+
+    });
+
+
+}
+
+
+
+
+
+
+
+// 每个大类随机一个
+
+document
+.getElementById(
+    "random-btn"
+)
+.onclick=()=>{
+
+
+    let checked =
+    [
+        ...document
+        .querySelectorAll(
+            "#random-categories input:checked"
+        )
+    ];
+
+
+
+    checked.forEach(box=>{
+
+
+        let list =
+        categoryTags[
+            box.value
+        ];
+
+
+
+        if(!list.length)
+            return;
+
+
+
+        let item =
+        list[
+            Math.floor(
+                Math.random()
+                *
+                list.length
+            )
+        ];
+
+
+
+        if(
+            !selectedTags.some(
+                x=>
+                x.tag===item.tag
+            )
+        ){
+
+
+            selectedTags.push({
+
+                tag:item.tag,
+
+                chinese:item.chinese
+
+            });
+
+
+        }
+
+
+    });
+
+
+
+    updateSelected();
+
+
+};
+
+
+
+
+
+
+
+
+
+// ==========================
+// 复制
+// ==========================
 
 document
 .getElementById(
     "copy-btn"
 )
-.onclick = ()=>{
+.onclick=()=>{
 
 
     let text =
     selectedTags
-    .map(item=>{
-
-
-        return item.tag
-        .replaceAll(
+    .map(
+        x=>
+        x.tag.replaceAll(
             "_",
             " "
-        );
-
-
-    })
-    .join(
-        ", "
-    );
+        )
+    )
+    .join(", ");
 
 
 
@@ -519,238 +763,18 @@ document
 
 
 
-// ===============================
+// ==========================
 // 清空
-// ===============================
+// ==========================
 
 document
 .getElementById(
     "clear-btn"
 )
-.onclick = ()=>{
+.onclick=()=>{
 
 
-    selectedTags = [];
-
-
-    updateSelected();
-
-
-    refreshButtons();
-
-
-};
-
-
-
-
-
-
-
-
-
-// ===============================
-// 随机分类选择
-// ===============================
-
-function loadRandomCategories(){
-
-
-    const box =
-    document.getElementById(
-        "random-categories"
-    );
-
-
-    box.innerHTML = "";
-
-
-
-    Object.keys(tagData)
-    .forEach(category=>{
-
-
-        let label =
-        document.createElement(
-            "label"
-        );
-
-
-        label.className =
-        "random-item";
-
-
-
-        let input =
-        document.createElement(
-            "input"
-        );
-
-
-        input.type =
-        "checkbox";
-
-
-        input.value =
-        category;
-
-
-
-        label.appendChild(
-            input
-        );
-
-
-        label.appendChild(
-            document.createTextNode(
-                category
-            )
-        );
-
-
-
-        box.appendChild(label);
-
-
-
-    });
-
-
-}
-
-
-
-
-
-
-
-
-// ===============================
-// 每个分类随机一个
-// ===============================
-
-document
-.getElementById(
-    "random-btn"
-)
-.onclick = ()=>{
-
-
-    let checked =
-    [
-        ...
-        document
-        .querySelectorAll(
-            "#random-categories input:checked"
-        )
-    ];
-
-
-
-    if(
-        checked.length === 0
-    ){
-
-        alert(
-            "请选择随机分类"
-        );
-
-        return;
-
-    }
-
-
-
-
-    checked.forEach(box=>{
-
-
-        let category =
-        box.value;
-
-
-
-        let groups =
-        tagData[category];
-
-
-
-        let allTags = [];
-
-
-
-        Object.values(groups)
-        .forEach(group=>{
-
-
-            group.forEach(item=>{
-
-
-                let tag =
-                Object.keys(item)[0];
-
-
-                let chinese =
-                item[tag];
-
-
-
-                allTags.push({
-
-                    tag:tag,
-
-                    chinese:chinese
-
-                });
-
-
-            });
-
-
-        });
-
-
-
-
-        if(allTags.length > 0){
-
-
-            let result =
-            allTags[
-                Math.floor(
-                    Math.random()
-                    *
-                    allTags.length
-                )
-            ];
-
-
-
-            let exists =
-            selectedTags.some(
-                x =>
-                x.tag === result.tag
-            );
-
-
-
-            if(!exists){
-
-
-                selectedTags.push(
-                    result
-                );
-
-
-            }
-
-
-        }
-
-
-
-    });
-
+    selectedTags=[];
 
 
     updateSelected();
@@ -758,195 +782,4 @@ document
     refreshButtons();
 
 
-
 };
-
-
-
-
-
-
-
-
-
-// ===============================
-// 搜索索引
-// ===============================
-
-let searchIndex = [];
-
-
-
-function buildSearchIndex(){
-
-
-    searchIndex = [];
-
-
-
-    Object.keys(tagData)
-    .forEach(category=>{
-
-
-        Object.values(
-            tagData[category]
-        )
-        .forEach(group=>{
-
-
-            group.forEach(item=>{
-
-
-                let tag =
-                Object.keys(item)[0];
-
-
-                let chinese =
-                item[tag];
-
-
-
-                searchIndex.push({
-
-                    tag:tag,
-
-                    chinese:chinese,
-
-                    category:category
-
-                });
-
-
-            });
-
-
-        });
-
-
-    });
-
-
-
-}
-
-
-
-
-
-
-
-
-// ===============================
-// 中文搜索
-// ===============================
-
-document
-.getElementById(
-    "search-input"
-)
-.addEventListener(
-    "input",
-    function(){
-
-
-        let keyword =
-        this.value.trim();
-
-
-
-        let box =
-        document.getElementById(
-            "search-results"
-        );
-
-
-        box.innerHTML = "";
-
-
-
-        if(!keyword){
-
-            return;
-
-        }
-
-
-
-        let results =
-        searchIndex.filter(
-            item =>
-            item.chinese
-            .includes(keyword)
-        )
-        .slice(
-            0,
-            50
-        );
-
-
-
-        results.forEach(item=>{
-
-
-            let div =
-            document.createElement(
-                "div"
-            );
-
-
-            div.className =
-            "search-item";
-
-
-
-            div.innerText =
-            item.chinese;
-
-
-
-            div.onclick = ()=>{
-
-
-                let exists =
-                selectedTags.some(
-                    x =>
-                    x.tag === item.tag
-                );
-
-
-
-                if(!exists){
-
-
-                    selectedTags.push({
-
-                        tag:item.tag,
-
-                        chinese:item.chinese
-
-                    });
-
-
-
-                    updateSelected();
-
-                    refreshButtons();
-
-
-                }
-
-
-            };
-
-
-
-            box.appendChild(div);
-
-
-
-        });
-
-
-
-    }
-);
