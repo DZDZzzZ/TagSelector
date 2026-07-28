@@ -3,13 +3,24 @@ let tagData = {};
 let selectedTags = [];
 
 
-
-// 加载 JSON
+// ===============================
+// 读取 JSON
+// ===============================
 
 fetch("./tags.json")
+.then(response => {
 
-.then(response => response.json())
+    if(!response.ok){
 
+        throw new Error(
+            "tags.json读取失败"
+        );
+
+    }
+
+    return response.json();
+
+})
 .then(data => {
 
 
@@ -19,21 +30,22 @@ fetch("./tags.json")
 
 
 })
-
 .catch(error=>{
 
+
     console.error(
-        "tags.json读取失败:",
         error
     );
+
 
 });
 
 
 
 
-
+// ===============================
 // 加载一级分类
+// ===============================
 
 function loadCategories(){
 
@@ -57,24 +69,33 @@ function loadCategories(){
         );
 
 
-        div.className="category";
+        div.className =
+        "category";
 
-        div.innerText=category;
+
+        div.innerText =
+        category;
 
 
-        div.onclick=()=>{
 
-            showCategory(category);
+        div.onclick = ()=>{
+
+
+            showCategory(
+                category
+            );
+
 
         };
 
 
-        box.appendChild(div);
 
+        box.appendChild(
+            div
+        );
 
 
     });
-
 
 
 }
@@ -83,16 +104,19 @@ function loadCategories(){
 
 
 
+
+// ===============================
 // 显示分类内容
+// ===============================
 
 function showCategory(category){
-
 
 
     document.getElementById(
         "category-title"
     )
-    .innerText=category;
+    .innerText =
+    category;
 
 
 
@@ -121,12 +145,17 @@ function showCategory(category){
         );
 
 
-        title.style.width="100%";
+        title.style.width =
+        "100%";
 
-        title.innerText=group;
+
+        title.innerText =
+        group;
 
 
-        tagsBox.appendChild(title);
+        tagsBox.appendChild(
+            title
+        );
 
 
 
@@ -150,23 +179,26 @@ function showCategory(category){
             );
 
 
-            btn.className="tag";
+            btn.className =
+            "tag";
 
 
-            btn.innerText=chinese;
+            btn.innerText =
+            chinese;
 
 
 
-            btn.dataset.tag=
+            btn.dataset.tag =
             english;
 
 
 
-            btn.onclick=()=>{
+            btn.onclick = ()=>{
 
 
                 toggleTag(
                     english,
+                    chinese,
                     btn
                 );
 
@@ -175,7 +207,9 @@ function showCategory(category){
 
 
 
-            tagsBox.appendChild(btn);
+            tagsBox.appendChild(
+                btn
+            );
 
 
 
@@ -185,24 +219,40 @@ function showCategory(category){
     });
 
 
+
+    // 切换分类后恢复已选择状态
+
+    refreshButtons();
+
+
 }
 
 
 
 
 
-// 添加/删除tag
 
-function toggleTag(tag, element){
 
+// ===============================
+// 选择 / 取消 tag
+// ===============================
+
+function toggleTag(
+    tag,
+    chinese,
+    element
+){
 
 
     let index =
-    selectedTags.indexOf(tag);
+    selectedTags.findIndex(
+        item =>
+        item.tag === tag
+    );
 
 
 
-    if(index!==-1){
+    if(index !== -1){
 
 
         selectedTags.splice(
@@ -217,11 +267,17 @@ function toggleTag(tag, element){
 
 
     }
-
     else{
 
 
-        selectedTags.push(tag);
+        selectedTags.push({
+
+            tag: tag,
+
+            chinese: chinese
+
+        });
+
 
 
         element.classList.add(
@@ -236,16 +292,20 @@ function toggleTag(tag, element){
     updateSelected();
 
 
+
 }
 
 
 
 
 
-// 更新右侧
+
+
+// ===============================
+// 更新右侧列表
+// ===============================
 
 function updateSelected(){
-
 
 
     const box =
@@ -254,12 +314,11 @@ function updateSelected(){
     );
 
 
-
     box.innerHTML="";
 
 
 
-    selectedTags.forEach(tag=>{
+    selectedTags.forEach(item=>{
 
 
         let div =
@@ -268,25 +327,44 @@ function updateSelected(){
         );
 
 
-        div.className=
+
+        div.className =
         "selected-item";
 
 
-        div.innerText=tag;
+
+        // 显示中文
+
+        div.innerText =
+        item.chinese;
 
 
 
-        div.onclick=()=>{
+        // 点击删除
+
+        div.onclick = ()=>{
 
 
-            selectedTags.splice(
-                selectedTags.indexOf(tag),
-                1
+            let index =
+            selectedTags.findIndex(
+                x =>
+                x.tag === item.tag
             );
 
 
-            updateSelected();
 
+            if(index !== -1){
+
+                selectedTags.splice(
+                    index,
+                    1
+                );
+
+            }
+
+
+
+            updateSelected();
 
             refreshButtons();
 
@@ -295,7 +373,9 @@ function updateSelected(){
 
 
 
-        box.appendChild(div);
+        box.appendChild(
+            div
+        );
 
 
 
@@ -306,8 +386,9 @@ function updateSelected(){
     document.getElementById(
         "count"
     )
-    .innerText=
+    .innerText =
     selectedTags.length;
+
 
 
 }
@@ -315,21 +396,34 @@ function updateSelected(){
 
 
 
-// 刷新中间按钮状态
+
+
+
+// ===============================
+// 更新中间按钮状态
+// ===============================
 
 function refreshButtons(){
 
 
     document
-    .querySelectorAll(".tag")
+    .querySelectorAll(
+        ".tag"
+    )
     .forEach(btn=>{
 
 
-        if(
-            selectedTags.includes(
-                btn.dataset.tag
-            )
-        ){
+        let exists =
+        selectedTags.some(
+            item =>
+            item.tag ===
+            btn.dataset.tag
+        );
+
+
+
+        if(exists){
+
 
             btn.classList.add(
                 "selected"
@@ -348,7 +442,9 @@ function refreshButtons(){
         }
 
 
+
     });
+
 
 
 }
@@ -358,20 +454,41 @@ function refreshButtons(){
 
 
 
-// 复制
+
+// ===============================
+// 复制 Prompt
+// ===============================
 
 document
 .getElementById(
     "copy-btn"
 )
-.onclick=()=>{
+.onclick = ()=>{
+
+
+    let prompt =
+    selectedTags
+    .map(item => {
+
+
+        return item.tag
+        .replaceAll(
+            "_",
+            " "
+        );
+
+
+    })
+    .join(
+        ", "
+    );
+
 
 
     navigator.clipboard.writeText(
-
-        selectedTags.join(", ")
-
+        prompt
     );
+
 
 
 };
@@ -380,22 +497,28 @@ document
 
 
 
+
+
+
+// ===============================
 // 清空
+// ===============================
 
 document
 .getElementById(
     "clear-btn"
 )
-.onclick=()=>{
+.onclick = ()=>{
 
 
-    selectedTags=[];
+    selectedTags = [];
 
 
     updateSelected();
 
 
     refreshButtons();
+
 
 
 };
