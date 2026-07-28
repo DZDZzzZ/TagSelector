@@ -1,18 +1,19 @@
-let tagData = {};
+let tagData={};
 
-let selectedTags = [];
+let selectedTags=[];
 
-let searchIndex = [];
-
-let categoryTags = {};
+let searchIndex=[];
 
 
 
 
 
-// ==========================
-// 加载 JSON
-// ==========================
+
+
+// =====================
+// 加载JSON
+// =====================
+
 
 fetch("./tags.json")
 
@@ -20,23 +21,20 @@ fetch("./tags.json")
 
 .then(data=>{
 
+
     tagData=data;
 
 
-    buildCategoryIndex();
-
     buildSearchIndex();
 
-    loadCategories();
+
+    loadTree();
+
+
 
     loadRandomCategories();
 
 
-})
-
-.catch(e=>{
-
-    console.error(e);
 
 });
 
@@ -47,16 +45,68 @@ fetch("./tags.json")
 
 
 
-// ==========================
-// 递归解析所有tag
-// ==========================
 
-function scanTags(
+// =====================
+// 判断是否tag节点
+// =====================
+
+function isTagNode(obj){
+
+
+    if(
+        typeof obj!=="object"
+        ||
+        Array.isArray(obj)
+    ){
+
+        return false;
+
+    }
+
+
+
+    return Object.values(obj)
+    .every(
+        v =>
+        typeof v==="string"
+    );
+
+}
+
+
+
+
+
+
+
+
+
+
+// =====================
+// 建立搜索索引
+// =====================
+
+
+function buildSearchIndex(){
+
+
+    searchIndex=[];
+
+
+    recursiveSearch(
+        tagData,
+        []
+    );
+
+
+}
+
+
+
+function recursiveSearch(
     obj,
-    path=[]
+    path
 ){
-
-    let result=[];
 
 
     Object.entries(obj)
@@ -64,10 +114,11 @@ function scanTags(
 
 
         if(
-            typeof value === "string"
+            typeof value==="string"
         ){
 
-            result.push({
+
+            searchIndex.push({
 
                 tag:key,
 
@@ -81,65 +132,26 @@ function scanTags(
         }
 
 
-        else if(
-            typeof value === "object"
-        ){
+        else{
 
 
-            result.push(
-                ...scanTags(
-                    value,
-                    [
-                        ...path,
-                        key
-                    ]
-                )
+            recursiveSearch(
+
+                value,
+
+                [
+                    ...path,
+                    key
+                ]
+
             );
 
 
         }
 
 
-
     });
 
-
-    return result;
-
-}
-
-
-
-
-
-
-
-
-// ==========================
-// 建立分类索引
-// ==========================
-
-function buildCategoryIndex(){
-
-
-    categoryTags={};
-
-
-
-    Object.keys(tagData)
-    .forEach(category=>{
-
-
-        categoryTags[category] =
-        scanTags(
-            tagData[category],
-            [
-                category
-            ]
-        );
-
-
-    });
 
 
 }
@@ -151,11 +163,12 @@ function buildCategoryIndex(){
 
 
 
-// ==========================
-// 左侧分类
-// ==========================
 
-function loadCategories(){
+// =====================
+// 加载文件夹树
+// =====================
+
+function loadTree(){
 
 
     let box =
@@ -167,8 +180,32 @@ function loadCategories(){
     box.innerHTML="";
 
 
-    Object.keys(categoryTags)
-    .forEach(category=>{
+
+    createTreeNode(
+
+        tagData,
+
+        box
+
+    );
+
+
+}
+
+
+
+
+
+
+function createTreeNode(
+    obj,
+    parent
+){
+
+
+    Object.entries(obj)
+    .forEach(
+    ([key,value])=>{
 
 
         let div =
@@ -177,80 +214,119 @@ function loadCategories(){
         );
 
 
-        div.className="category";
+
+        div.className=
+        "tree-item";
 
 
-        div.innerText=
-        category;
+
+        if(
+            typeof value==="string"
+        ){
 
 
-        div.onclick=()=>{
+            div.className=
+            "tree-tag";
 
 
-            showCategory(category);
+            div.innerText=
+            value;
 
 
-        };
+
+            div.onclick=()=>{
 
 
-        box.appendChild(div);
+                addTag(
+
+                    key,
+
+                    value
+
+                );
+
+
+            };
+
+
+
+            parent.appendChild(div);
+
+
+
+        }
+
+        else{
+
+
+            let folder =
+            document.createElement(
+                "div"
+            );
+
+
+            folder.className=
+            "tree-folder";
+
+
+            folder.innerText=
+            "📁 "+key;
+
+
+
+            let children =
+            document.createElement(
+                "div"
+            );
+
+
+            children.className=
+            "tree-children";
+
+
+            children.style.display=
+            "none";
+
+
+
+            folder.onclick=()=>{
+
+
+                children.style.display =
+                children.style.display==="none"
+                ?
+                "block"
+                :
+                "none";
+
+
+            };
+
+
+
+            parent.appendChild(folder);
+
+
+            parent.appendChild(children);
+
+
+
+            createTreeNode(
+
+                value,
+
+                children
+
+            );
+
+
+        }
+
 
 
     });
 
 
-}
-
-
-
-
-
-
-
-
-
-// ==========================
-// 显示分类tag
-// ==========================
-
-function showCategory(category){
-
-
-    document
-    .getElementById(
-        "category-title"
-    )
-    .innerText=
-    category;
-
-
-
-    let box =
-    document.getElementById(
-        "tags"
-    );
-
-
-    box.innerHTML="";
-
-
-
-    categoryTags[category]
-    .forEach(item=>{
-
-
-        createTagButton(
-            item.tag,
-            item.chinese,
-            box
-        );
-
-
-    });
-
-
-    refreshButtons();
-
 
 }
 
@@ -262,103 +338,40 @@ function showCategory(category){
 
 
 
-// ==========================
-// 创建tag按钮
-// ==========================
-
-function createTagButton(
-    tag,
-    chinese,
-    parent
-){
+// =====================
+// 添加tag
+// =====================
 
 
-    let div =
-    document.createElement(
-        "div"
-    );
-
-
-    div.className="tag";
-
-
-    div.innerText=
-    chinese;
-
-
-    div.dataset.tag=
-    tag;
-
-
-    div.onclick=()=>{
-
-
-        toggleTag(
-            tag,
-            chinese
-        );
-
-
-    };
-
-
-    parent.appendChild(div);
-
-
-}
-
-
-
-
-
-
-
-
-
-// ==========================
-// 添加/删除tag
-// ==========================
-
-function toggleTag(
+function addTag(
     tag,
     chinese
 ){
 
 
-    let index =
-    selectedTags.findIndex(
-        x=>x.tag===tag
-    );
+    if(
+        selectedTags.some(
+            x=>x.tag===tag
+        )
+    ){
 
-
-    if(index>=0){
-
-
-        selectedTags.splice(
-            index,
-            1
-        );
-
+        return;
 
     }
-    else{
 
 
-        selectedTags.push({
 
-            tag:tag,
+    selectedTags.push({
 
-            chinese:chinese
+        tag:tag,
 
-        });
+        chinese:chinese
 
+    });
 
-    }
 
 
     updateSelected();
-
-    refreshButtons();
 
 
 }
@@ -371,9 +384,9 @@ function toggleTag(
 
 
 
-// ==========================
-// 右侧列表
-// ==========================
+// =====================
+// 右侧显示
+// =====================
 
 function updateSelected(){
 
@@ -401,6 +414,7 @@ function updateSelected(){
         "selected-item";
 
 
+
         div.innerText=
         item.chinese;
 
@@ -418,13 +432,13 @@ function updateSelected(){
 
             updateSelected();
 
-            refreshButtons();
-
 
         };
 
 
+
         box.appendChild(div);
+
 
 
     });
@@ -439,46 +453,6 @@ function updateSelected(){
     selectedTags.length;
 
 
-}
-
-
-
-
-
-
-
-
-
-// ==========================
-// 更新按钮状态
-// ==========================
-
-function refreshButtons(){
-
-
-    document
-    .querySelectorAll(
-        ".tag"
-    )
-    .forEach(btn=>{
-
-
-        let exist =
-        selectedTags.some(
-            x=>
-            x.tag===
-            btn.dataset.tag
-        );
-
-
-        btn.classList.toggle(
-            "selected",
-            exist
-        );
-
-
-    });
-
 
 }
 
@@ -490,115 +464,27 @@ function refreshButtons(){
 
 
 
-// ==========================
+// =====================
 // 搜索
-// ==========================
-
-function buildSearchIndex(){
-
-
-    searchIndex =
-    scanTags(tagData);
-
-
-}
-
+// =====================
 
 
 document
 .getElementById(
-    "search-input"
+"search-input"
 )
 .addEventListener(
-    "input",
-    e=>{
+"input",
+e=>{
 
 
-        let key =
-        e.target.value.trim();
-
-
-
-        let box =
-        document.getElementById(
-            "search-results"
-        );
-
-
-        box.innerHTML="";
-
-
-
-        if(!key)
-            return;
-
-
-
-        searchIndex
-        .filter(
-            x=>
-            x.chinese.includes(key)
-        )
-        .slice(0,50)
-        .forEach(item=>{
-
-
-            let div =
-            document.createElement(
-                "div"
-            );
-
-
-            div.className=
-            "search-item";
-
-
-            div.innerText=
-            item.chinese;
-
-
-
-            div.onclick=()=>{
-
-
-                toggleTag(
-                    item.tag,
-                    item.chinese
-                );
-
-
-            };
-
-
-            box.appendChild(div);
-
-
-
-        });
-
-
-
-    }
-);
-
-
-
-
-
-
-
-
-
-// ==========================
-// 随机分类
-// ==========================
-
-function loadRandomCategories(){
+    let key =
+    e.target.value.trim();
 
 
     let box =
     document.getElementById(
-        "random-categories"
+    "search-results"
     );
 
 
@@ -606,116 +492,63 @@ function loadRandomCategories(){
 
 
 
-    Object.keys(categoryTags)
-    .forEach(category=>{
+    if(!key)
+        return;
 
 
-        let label =
+
+    searchIndex
+
+    .filter(
+        x=>
+        x.chinese.includes(key)
+    )
+
+    .slice(0,50)
+
+    .forEach(item=>{
+
+
+        let div =
         document.createElement(
-            "label"
+        "div"
         );
 
 
-        label.className=
-        "random-item";
+        div.className=
+        "search-item";
+
+
+        div.innerText=
+        item.chinese;
 
 
 
-        label.innerHTML=
-        `
-        <input type="checkbox"
-        value="${category}">
-        ${category}
-        `;
+        div.onclick=()=>{
 
 
-        box.appendChild(label);
+            addTag(
+
+                item.tag,
+
+                item.chinese
+
+            );
 
 
-    });
-
-
-}
-
+        };
 
 
 
+        box.appendChild(div);
 
-
-
-// 每个大类随机一个
-
-document
-.getElementById(
-    "random-btn"
-)
-.onclick=()=>{
-
-
-    let checked =
-    [
-        ...document
-        .querySelectorAll(
-            "#random-categories input:checked"
-        )
-    ];
-
-
-
-    checked.forEach(box=>{
-
-
-        let list =
-        categoryTags[
-            box.value
-        ];
-
-
-
-        if(!list.length)
-            return;
-
-
-
-        let item =
-        list[
-            Math.floor(
-                Math.random()
-                *
-                list.length
-            )
-        ];
-
-
-
-        if(
-            !selectedTags.some(
-                x=>
-                x.tag===item.tag
-            )
-        ){
-
-
-            selectedTags.push({
-
-                tag:item.tag,
-
-                chinese:item.chinese
-
-            });
-
-
-        }
 
 
     });
 
 
 
-    updateSelected();
-
-
-};
+});
 
 
 
@@ -725,26 +558,29 @@ document
 
 
 
-// ==========================
+// =====================
 // 复制
-// ==========================
+// =====================
+
 
 document
 .getElementById(
-    "copy-btn"
+"copy-btn"
 )
 .onclick=()=>{
 
 
     let text =
     selectedTags
+
     .map(
         x=>
         x.tag.replaceAll(
-            "_",
-            " "
+        "_",
+        " "
         )
     )
+
     .join(", ");
 
 
@@ -763,23 +599,193 @@ document
 
 
 
-// ==========================
+// =====================
 // 清空
-// ==========================
+// =====================
+
 
 document
 .getElementById(
-    "clear-btn"
+"clear-btn"
 )
 .onclick=()=>{
 
 
     selectedTags=[];
 
-
     updateSelected();
-
-    refreshButtons();
 
 
 };
+
+
+
+
+
+
+
+
+
+// =====================
+// 随机
+// =====================
+
+function loadRandomCategories(){
+
+
+    let box =
+    document.getElementById(
+    "random-categories"
+    );
+
+
+    box.innerHTML="";
+
+
+
+    Object.keys(tagData)
+    .forEach(key=>{
+
+
+        let label =
+        document.createElement(
+        "label"
+        );
+
+
+        label.className=
+        "random-item";
+
+
+
+        label.innerHTML=
+        `
+        <input type="checkbox"
+        value="${key}">
+        ${key}
+        `;
+
+
+
+        box.appendChild(label);
+
+
+    });
+
+
+}
+
+
+
+
+document
+.getElementById(
+"random-btn"
+)
+.onclick=()=>{
+
+
+    let checked =
+    [
+    ...document.querySelectorAll(
+    "#random-categories input:checked"
+    )
+    ];
+
+
+
+    checked.forEach(c=>{
+
+
+        let list=[];
+
+
+
+        recursiveCollect(
+
+            tagData[c.value],
+
+            list
+
+        );
+
+
+
+        if(list.length){
+
+
+            let item =
+            list[
+            Math.floor(
+            Math.random()*list.length
+            )
+            ];
+
+
+
+            addTag(
+
+                item.tag,
+
+                item.chinese
+
+            );
+
+
+        }
+
+
+
+    });
+
+
+
+};
+
+
+
+
+
+
+function recursiveCollect(
+obj,
+arr
+){
+
+
+    Object.entries(obj)
+    .forEach(([k,v])=>{
+
+
+        if(
+            typeof v==="string"
+        ){
+
+
+            arr.push({
+
+                tag:k,
+
+                chinese:v
+
+            });
+
+
+        }
+
+        else{
+
+
+            recursiveCollect(
+                v,
+                arr
+            );
+
+
+        }
+
+
+    });
+
+
+}
