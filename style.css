@@ -269,3 +269,55 @@ display:flex;
 gap:10px;
 
 }
+.tree-item{
+
+    margin:5px 0;
+
+}
+
+
+.tree-folder{
+
+    cursor:pointer;
+
+    padding:5px;
+
+    user-select:none;
+
+}
+
+
+
+.tree-folder:hover{
+
+    background:#444;
+
+}
+
+
+
+.tree-children{
+
+    margin-left:20px;
+
+}
+
+
+
+.tree-tag{
+
+    padding:6px;
+
+    margin-left:20px;
+
+    cursor:pointer;
+
+}
+
+
+
+.tree-tag:hover{
+
+    background:#555;
+
+}
