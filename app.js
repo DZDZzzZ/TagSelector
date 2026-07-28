@@ -1,99 +1,401 @@
-let data = {};
+let tagData = {};
 
-let currentMain = null;
+let selectedTags = [];
 
-fetch("tags.json")
-  .then((res) => res.json())
 
-  .then((json) => {
-    data = json;
 
-    loadMainCategory();
-  });
+// 加载 JSON
 
-function loadMainCategory() {
-  let box = document.getElementById("category");
+fetch("./tags.json")
 
-  box.innerHTML = "";
+.then(response => response.json())
 
-  Object.keys(data).forEach((main) => {
-    let div = document.createElement("div");
+.then(data => {
 
-    div.className = "category";
 
-    div.innerText = main;
+    tagData = data;
 
-    div.onclick = () => {
-      currentMain = main;
+    loadCategories();
 
-      showSubCategory(main);
-    };
 
-    box.appendChild(div);
-  });
-}
+})
 
-function showSubCategory(main) {
-  let box = document.getElementById("tags");
+.catch(error=>{
 
-  box.innerHTML = "";
+    console.error(
+        "tags.json读取失败:",
+        error
+    );
 
-  Object.keys(data[main]).forEach((sub) => {
-    let title = document.createElement("h3");
+});
 
-    title.innerText = sub;
 
-    box.appendChild(title);
 
-    data[main][sub].forEach((item) => {
-      let tag = Object.keys(item)[0];
 
-      let cn = item[tag];
 
-      let btn = document.createElement("div");
+// 加载一级分类
 
-      btn.className = "tag";
+function loadCategories(){
 
-      btn.innerText = cn;
 
-      btn.onclick = () => {
-        navigator.clipboard.writeText(tag);
+    const box =
+    document.getElementById(
+        "categories"
+    );
 
-        alert("复制:\n" + tag);
-      };
 
-      btn.onmouseenter = () => {
-        showPreview(tag, cn);
-      };
+    box.innerHTML="";
 
-      box.appendChild(btn);
+
+    Object.keys(tagData)
+    .forEach(category=>{
+
+
+        let div =
+        document.createElement(
+            "div"
+        );
+
+
+        div.className="category";
+
+        div.innerText=category;
+
+
+        div.onclick=()=>{
+
+            showCategory(category);
+
+        };
+
+
+        box.appendChild(div);
+
+
+
     });
-  });
+
+
+
 }
 
-function showPreview(tag, cn) {
-  let box = document.getElementById("preview-content");
 
-  let html = `
 
-<b>${tag}</b>
 
-<br><br>
 
-${cn}
+// 显示分类内容
 
-<br><br>
+function showCategory(category){
 
-`;
 
-  let img = "images/" + tag + ".jpg";
 
-  html += `
+    document.getElementById(
+        "category-title"
+    )
+    .innerText=category;
 
-<img src="${img}"
-onerror="this.style.display='none'">
 
-`;
 
-  box.innerHTML = html;
+    const tagsBox =
+    document.getElementById(
+        "tags"
+    );
+
+
+    tagsBox.innerHTML="";
+
+
+
+    let groups =
+    tagData[category];
+
+
+
+    Object.keys(groups)
+    .forEach(group=>{
+
+
+        let title =
+        document.createElement(
+            "h3"
+        );
+
+
+        title.style.width="100%";
+
+        title.innerText=group;
+
+
+        tagsBox.appendChild(title);
+
+
+
+
+        groups[group]
+        .forEach(item=>{
+
+
+            let english =
+            Object.keys(item)[0];
+
+
+            let chinese =
+            item[english];
+
+
+
+            let btn =
+            document.createElement(
+                "div"
+            );
+
+
+            btn.className="tag";
+
+
+            btn.innerText=chinese;
+
+
+
+            btn.dataset.tag=
+            english;
+
+
+
+            btn.onclick=()=>{
+
+
+                toggleTag(
+                    english,
+                    btn
+                );
+
+
+            };
+
+
+
+            tagsBox.appendChild(btn);
+
+
+
+        });
+
+
+    });
+
+
 }
+
+
+
+
+
+// 添加/删除tag
+
+function toggleTag(tag, element){
+
+
+
+    let index =
+    selectedTags.indexOf(tag);
+
+
+
+    if(index!==-1){
+
+
+        selectedTags.splice(
+            index,
+            1
+        );
+
+
+        element.classList.remove(
+            "selected"
+        );
+
+
+    }
+
+    else{
+
+
+        selectedTags.push(tag);
+
+
+        element.classList.add(
+            "selected"
+        );
+
+
+    }
+
+
+
+    updateSelected();
+
+
+}
+
+
+
+
+
+// 更新右侧
+
+function updateSelected(){
+
+
+
+    const box =
+    document.getElementById(
+        "selected-tags"
+    );
+
+
+
+    box.innerHTML="";
+
+
+
+    selectedTags.forEach(tag=>{
+
+
+        let div =
+        document.createElement(
+            "div"
+        );
+
+
+        div.className=
+        "selected-item";
+
+
+        div.innerText=tag;
+
+
+
+        div.onclick=()=>{
+
+
+            selectedTags.splice(
+                selectedTags.indexOf(tag),
+                1
+            );
+
+
+            updateSelected();
+
+
+            refreshButtons();
+
+
+        };
+
+
+
+        box.appendChild(div);
+
+
+
+    });
+
+
+
+    document.getElementById(
+        "count"
+    )
+    .innerText=
+    selectedTags.length;
+
+
+}
+
+
+
+
+// 刷新中间按钮状态
+
+function refreshButtons(){
+
+
+    document
+    .querySelectorAll(".tag")
+    .forEach(btn=>{
+
+
+        if(
+            selectedTags.includes(
+                btn.dataset.tag
+            )
+        ){
+
+            btn.classList.add(
+                "selected"
+            );
+
+
+        }
+        else{
+
+
+            btn.classList.remove(
+                "selected"
+            );
+
+
+        }
+
+
+    });
+
+
+}
+
+
+
+
+
+
+// 复制
+
+document
+.getElementById(
+    "copy-btn"
+)
+.onclick=()=>{
+
+
+    navigator.clipboard.writeText(
+
+        selectedTags.join(", ")
+
+    );
+
+
+};
+
+
+
+
+
+// 清空
+
+document
+.getElementById(
+    "clear-btn"
+)
+.onclick=()=>{
+
+
+    selectedTags=[];
+
+
+    updateSelected();
+
+
+    refreshButtons();
+
+
+};
