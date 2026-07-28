@@ -5,8 +5,6 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Tag Selector</title>
 
 <link rel="stylesheet" href="style.css">
@@ -20,53 +18,41 @@
 <div class="container">
 
 
+<!-- 一级分类 -->
 
-<!-- 左侧 -->
-
-<div class="sidebar">
-
-
-<h2>搜索</h2>
-
-
-<input 
-id="search-input"
-placeholder="输入中文搜索..."
->
-
-
-
-<div id="search-results"></div>
-
-
-
-<hr>
-
-
+<div class="panel">
 
 <h2>分类</h2>
-
 
 <div id="categories"></div>
 
 
-
 <hr>
 
 
-
-<h2>随机设置</h2>
-
+<h2>随机</h2>
 
 <div id="random-categories"></div>
-
-
 
 <button id="random-btn">
 每类随机一个
 </button>
 
 
+</div>
+
+
+
+
+
+<!-- 子分类 -->
+
+<div class="panel">
+
+<h2>子分类</h2>
+
+<div id="subcategories"></div>
+
 
 </div>
 
@@ -75,20 +61,28 @@ placeholder="输入中文搜索..."
 
 
 
-<!-- 中间 -->
+<!-- Tags -->
+
+<div class="panel">
 
 
-<div class="tags-panel">
+<h2>Tags</h2>
 
 
-<h2 id="category-title">
-请选择分类
-</h2>
+<input 
+id="search-input"
+placeholder="中文搜索..."
+>
+
+
+<div id="search-results"></div>
+
 
 
 <div id="tags"></div>
 
 
+
 </div>
 
 
@@ -97,25 +91,19 @@ placeholder="输入中文搜索..."
 
 
 
-<!-- 右侧 -->
+<!-- 已选择 -->
 
-
-<div class="selected-panel">
+<div class="panel selected">
 
 
 <h2>
-已选择 Tags
-<span id="count">
-0
-</span>
+已选择
+<span id="count">0</span>
 </h2>
 
 
 <div id="selected-tags"></div>
 
-
-
-<div class="buttons">
 
 
 <button id="copy-btn">
@@ -128,11 +116,8 @@ placeholder="输入中文搜索..."
 </button>
 
 
-</div>
-
 
 </div>
-
 
 
 
