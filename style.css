@@ -30,13 +30,115 @@ height:100vh;
 
 .panel{
 
-width:25%;
-
 padding:15px;
 
-border-right:1px solid #444;
-
 overflow:auto;
+
+border-right:
+1px solid #444;
+
+}
+
+
+
+.left{
+
+width:20%;
+
+}
+
+
+
+.middle{
+
+width:55%;
+
+}
+
+
+
+.right{
+
+width:25%;
+
+}
+
+
+
+
+.item{
+
+padding:8px;
+
+margin:5px 0;
+
+border-radius:5px;
+
+cursor:pointer;
+
+}
+
+
+
+.folder{
+
+background:#333;
+
+}
+
+
+.folder:hover{
+
+background:#555;
+
+}
+
+
+
+.tag{
+
+background:#264b70;
+
+}
+
+
+.tag:hover{
+
+background:#3975a8;
+
+}
+
+
+
+
+.selected-item{
+
+background:#333;
+
+padding:8px;
+
+margin:5px 0;
+
+border-radius:5px;
+
+cursor:pointer;
+
+}
+
+
+
+.selected-item:hover{
+
+background:#933;
+
+}
+
+
+
+
+.children{
+
+margin-left:20px;
 
 }
 
@@ -52,11 +154,11 @@ margin-top:10px;
 
 background:#1976d2;
 
+color:white;
+
 border:0;
 
-border-radius:6px;
-
-color:white;
+border-radius:5px;
 
 cursor:pointer;
 
@@ -78,21 +180,17 @@ width:100%;
 
 padding:10px;
 
-margin-bottom:10px;
-
 }
 
 
 
-.item{
+.search-item{
 
-padding:10px;
+background:#444;
 
-background:#333;
+padding:8px;
 
-margin-bottom:6px;
-
-border-radius:6px;
+margin-top:3px;
 
 cursor:pointer;
 
@@ -100,66 +198,10 @@ cursor:pointer;
 
 
 
-.item:hover{
+.path{
 
-background:#555;
+color:#aaa;
 
-}
-
-
-
-
-.folder::before{
-
-content:"📁 ";
-
-}
-
-
-
-.tag::before{
-
-content:"🏷 ";
-
-}
-
-
-
-.selected-item{
-
-padding:10px;
-
-background:#333;
-
-margin-bottom:6px;
-
-cursor:pointer;
-
-border-radius:6px;
-
-}
-
-
-
-.selected-item:hover{
-
-background:#933;
-
-}
-
-
-
-.selected{
-
-width:25%;
-
-}
-
-
-#selected-tags{
-
-height:80%;
-
-overflow:auto;
+font-size:12px;
 
 }
