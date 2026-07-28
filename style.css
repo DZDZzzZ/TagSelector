@@ -1,87 +1,256 @@
-body {
-  font-family: "Microsoft YaHei", Arial;
+*{
 
-  background: #222;
+    box-sizing:border-box;
 
-  color: white;
 }
 
-h1 {
-  text-align: center;
+
+body{
+
+    margin:0;
+
+    font-family:
+    "Microsoft YaHei",
+    Arial,
+    sans-serif;
+
+    background:#1e1e1e;
+
+    color:white;
+
 }
 
-#container {
-  display: flex;
 
-  gap: 20px;
 
-  padding: 20px;
+.container{
+
+
+    display:flex;
+
+    height:100vh;
+
+
 }
 
-/* 分类 */
 
-#category {
-  width: 250px;
 
-  background: #333;
+/* 左侧 */
 
-  padding: 15px;
+.sidebar{
+
+
+    width:250px;
+
+    border-right:
+    1px solid #444;
+
+    padding:15px;
+
+    overflow-y:auto;
+
+
 }
 
-.category {
-  padding: 8px;
 
-  cursor: pointer;
 
-  border-bottom: 1px solid #555;
+.category{
+
+
+    padding:10px;
+
+    margin-bottom:8px;
+
+    background:#333;
+
+    border-radius:6px;
+
+    cursor:pointer;
+
+
 }
 
-.category:hover {
-  background: #555;
+
+
+.category:hover{
+
+    background:#555;
+
 }
 
-/* 标签 */
 
-#tags {
-  flex: 1;
 
-  background: #333;
 
-  padding: 15px;
+/* 中间 */
 
-  display: flex;
 
-  flex-wrap: wrap;
+.tags-panel{
 
-  gap: 10px;
+
+    flex:1;
+
+    padding:20px;
+
+    overflow-y:auto;
+
+
 }
 
-.tag {
-  background: #555;
 
-  padding: 8px 12px;
 
-  border-radius: 8px;
+#tags{
 
-  cursor: pointer;
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+
 }
 
-.tag:hover {
-  background: #888;
+
+
+.tag{
+
+
+    padding:8px 14px;
+
+    background:#333;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    user-select:none;
+
+
 }
 
-/* 提示 */
 
-#preview {
-  width: 300px;
 
-  background: #333;
+.tag:hover{
 
-  padding: 15px;
+    background:#555;
+
 }
 
-#preview img {
-  max-width: 280px;
 
-  margin-top: 10px;
+
+.tag.selected{
+
+
+    background:#1976d2;
+
+}
+
+
+
+
+/* 右侧 */
+
+
+.selected-panel{
+
+
+    width:350px;
+
+    padding:20px;
+
+    border-left:
+    1px solid #444;
+
+    display:flex;
+
+    flex-direction:column;
+
+
+}
+
+
+
+#selected-tags{
+
+
+    flex:1;
+
+    overflow-y:auto;
+
+
+}
+
+
+
+.selected-item{
+
+
+    background:#333;
+
+    padding:10px;
+
+    margin-bottom:8px;
+
+    border-radius:6px;
+
+    cursor:pointer;
+
+    word-break:break-all;
+
+
+}
+
+
+
+.selected-item:hover{
+
+
+    background:#a33;
+
+
+}
+
+
+
+.buttons{
+
+
+    display:flex;
+
+    gap:10px;
+
+
+}
+
+
+
+button{
+
+
+    flex:1;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    background:#1976d2;
+
+    color:white;
+
+    font-size:16px;
+
+
+}
+
+
+
+button:hover{
+
+
+    opacity:0.8;
+
+
 }
