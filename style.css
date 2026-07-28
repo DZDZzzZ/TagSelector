@@ -1,0 +1,87 @@
+body {
+  font-family: "Microsoft YaHei", Arial;
+
+  background: #222;
+
+  color: white;
+}
+
+h1 {
+  text-align: center;
+}
+
+#container {
+  display: flex;
+
+  gap: 20px;
+
+  padding: 20px;
+}
+
+/* 分类 */
+
+#category {
+  width: 250px;
+
+  background: #333;
+
+  padding: 15px;
+}
+
+.category {
+  padding: 8px;
+
+  cursor: pointer;
+
+  border-bottom: 1px solid #555;
+}
+
+.category:hover {
+  background: #555;
+}
+
+/* 标签 */
+
+#tags {
+  flex: 1;
+
+  background: #333;
+
+  padding: 15px;
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 10px;
+}
+
+.tag {
+  background: #555;
+
+  padding: 8px 12px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.tag:hover {
+  background: #888;
+}
+
+/* 提示 */
+
+#preview {
+  width: 300px;
+
+  background: #333;
+
+  padding: 15px;
+}
+
+#preview img {
+  max-width: 280px;
+
+  margin-top: 10px;
+}
