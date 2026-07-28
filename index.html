@@ -2,12 +2,15 @@
 <html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Tag Selector</title>
+<meta charset="UTF-8">
 
-    <link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Tag Selector</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
 
 
@@ -17,68 +20,95 @@
 <div class="container">
 
 
-    <!-- 左侧分类 -->
-    <div class="sidebar">
 
-        <h2>分类</h2>
+<!-- 左侧 -->
 
-        <div id="categories"></div>
-
-    </div>
+<div class="sidebar">
 
 
-
-    <!-- 中间标签 -->
-    <div class="tags-panel">
-
-        <h2 id="category-title">
-            请选择分类
-        </h2>
+<h2>分类</h2>
 
 
-        <div id="tags">
-
-        </div>
-
-    </div>
+<div id="categories"></div>
 
 
 
-
-    <!-- 右侧选择 -->
-    <div class="selected-panel">
-
-
-        <h2>
-            已选择 Tags
-            <span id="count">
-                0
-            </span>
-        </h2>
+<hr>
 
 
 
-        <div id="selected-tags">
-
-        </div>
+<h2>随机设置</h2>
 
 
-
-        <div class="buttons">
-
-            <button id="copy-btn">
-                复制 Prompt
-            </button>
+<div id="random-categories"></div>
 
 
-            <button id="clear-btn">
-                清空
-            </button>
-
-        </div>
+<button id="random-btn">
+随机选择
+</button>
 
 
-    </div>
+</div>
+
+
+
+
+
+<!-- 中间 -->
+
+
+<div class="tags-panel">
+
+
+<h2 id="category-title">
+请选择分类
+</h2>
+
+
+<div id="tags"></div>
+
+
+</div>
+
+
+
+
+
+
+<!-- 右侧 -->
+
+
+<div class="selected-panel">
+
+
+<h2>
+已选择 Tags
+<span id="count">
+0
+</span>
+</h2>
+
+
+
+<div id="selected-tags"></div>
+
+
+
+
+<div class="buttons">
+
+
+<button id="copy-btn">
+复制 Prompt
+</button>
+
+
+<button id="clear-btn">
+清空
+</button>
+
+
+</div>
 
 
 
@@ -86,7 +116,14 @@
 
 
 
+
+
+
+</div>
+
+
 <script src="app.js"></script>
+
 
 </body>
 
