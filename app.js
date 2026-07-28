@@ -1,6 +1,11 @@
-let tagData={};
+let data={};
 
-let selectedTags=[];
+
+let selected=[];
+
+
+let currentPath=[];
+
 
 let searchIndex=[];
 
@@ -8,31 +13,23 @@ let searchIndex=[];
 
 
 
-
-
-// =====================
-// 加载JSON
-// =====================
-
-
 fetch("./tags.json")
 
 .then(r=>r.json())
 
-.then(data=>{
+.then(json=>{
 
 
-    tagData=data;
+data=json;
 
 
-    buildSearchIndex();
+buildSearch();
 
 
-    loadTree();
+loadRoot();
 
 
-
-    loadRandomCategories();
+loadRandom();
 
 
 
@@ -44,32 +41,76 @@ fetch("./tags.json")
 
 
 
+// =====================
+// 判断是否tag集合
+// =====================
+
+
+function isTagObject(obj){
+
+
+return Object.values(obj)
+.every(
+v=>typeof v==="string"
+);
+
+
+}
+
+
+
+
+
 
 
 // =====================
-// 判断是否tag节点
+// 左侧一级
 // =====================
 
-function isTagNode(obj){
+
+function loadRoot(){
 
 
-    if(
-        typeof obj!=="object"
-        ||
-        Array.isArray(obj)
-    ){
-
-        return false;
-
-    }
+let box=document
+.getElementById(
+"categories"
+);
 
 
+box.innerHTML="";
 
-    return Object.values(obj)
-    .every(
-        v =>
-        typeof v==="string"
-    );
+
+Object.keys(data)
+.forEach(k=>{
+
+
+let div=document.createElement(
+"div"
+);
+
+
+div.className="item folder";
+
+
+div.innerText=k;
+
+
+div.onclick=()=>{
+
+
+showChildren(
+data[k]
+);
+
+
+};
+
+
+box.appendChild(div);
+
+
+});
+
 
 }
 
@@ -80,78 +121,166 @@ function isTagNode(obj){
 
 
 
-
-
 // =====================
-// 建立搜索索引
+// 显示下一层
 // =====================
 
 
-function buildSearchIndex(){
+function showChildren(obj){
 
 
-    searchIndex=[];
+let sub=document
+.getElementById(
+"subcategories"
+);
 
 
-    recursiveSearch(
-        tagData,
-        []
-    );
+let tags=document
+.getElementById(
+"tags"
+);
+
+
+
+sub.innerHTML="";
+
+tags.innerHTML="";
+
+
+
+
+
+if(isTagObject(obj)){
+
+
+showTags(obj);
+
+
+return;
 
 
 }
 
 
 
-function recursiveSearch(
-    obj,
-    path
+
+
+Object.entries(obj)
+.forEach(
+([key,value])=>{
+
+
+let div=document.createElement(
+"div"
+);
+
+
+div.className="item";
+
+
+
+div.innerText=key;
+
+
+
+div.onclick=()=>{
+
+
+showChildren(value);
+
+
+};
+
+
+
+sub.appendChild(div);
+
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+
+// =====================
+// 显示tag
+// =====================
+
+
+function showTags(obj){
+
+
+let box=document
+.getElementById(
+"tags"
+);
+
+
+box.innerHTML="";
+
+
+
+Object.entries(obj)
+.forEach(
+([tag,chinese])=>{
+
+
+createTag(
+tag,
+chinese,
+box
+);
+
+
+});
+
+
+}
+
+
+
+
+
+
+function createTag(
+tag,
+chinese,
+box
 ){
 
 
-    Object.entries(obj)
-    .forEach(([key,value])=>{
+let div=document.createElement(
+"div"
+);
 
 
-        if(
-            typeof value==="string"
-        ){
+div.className="item tag";
 
 
-            searchIndex.push({
-
-                tag:key,
-
-                chinese:value,
-
-                path:path
-
-            });
+div.innerText=chinese;
 
 
-        }
+div.onclick=()=>{
 
 
-        else{
+addTag(
+tag,
+chinese
+);
 
 
-            recursiveSearch(
-
-                value,
-
-                [
-                    ...path,
-                    key
-                ]
-
-            );
+};
 
 
-        }
 
-
-    });
-
+box.appendChild(div);
 
 
 }
@@ -165,167 +294,33 @@ function recursiveSearch(
 
 
 // =====================
-// 加载文件夹树
+// 添加
 // =====================
 
-function loadTree(){
 
+function addTag(tag,chinese){
 
-    let box =
-    document.getElementById(
-        "categories"
-    );
 
+if(
+selected.some(
+x=>x.tag===tag
+)
+)
+return;
 
-    box.innerHTML="";
 
 
+selected.push({
 
-    createTreeNode(
+tag,
 
-        tagData,
+chinese
 
-        box
+});
 
-    );
 
 
-}
-
-
-
-
-
-
-function createTreeNode(
-    obj,
-    parent
-){
-
-
-    Object.entries(obj)
-    .forEach(
-    ([key,value])=>{
-
-
-        let div =
-        document.createElement(
-            "div"
-        );
-
-
-
-        div.className=
-        "tree-item";
-
-
-
-        if(
-            typeof value==="string"
-        ){
-
-
-            div.className=
-            "tree-tag";
-
-
-            div.innerText=
-            value;
-
-
-
-            div.onclick=()=>{
-
-
-                addTag(
-
-                    key,
-
-                    value
-
-                );
-
-
-            };
-
-
-
-            parent.appendChild(div);
-
-
-
-        }
-
-        else{
-
-
-            let folder =
-            document.createElement(
-                "div"
-            );
-
-
-            folder.className=
-            "tree-folder";
-
-
-            folder.innerText=
-            "📁 "+key;
-
-
-
-            let children =
-            document.createElement(
-                "div"
-            );
-
-
-            children.className=
-            "tree-children";
-
-
-            children.style.display=
-            "none";
-
-
-
-            folder.onclick=()=>{
-
-
-                children.style.display =
-                children.style.display==="none"
-                ?
-                "block"
-                :
-                "none";
-
-
-            };
-
-
-
-            parent.appendChild(folder);
-
-
-            parent.appendChild(children);
-
-
-
-            createTreeNode(
-
-                value,
-
-                children
-
-            );
-
-
-        }
-
-
-
-    });
-
+refreshSelected();
 
 
 }
@@ -336,122 +331,64 @@ function createTreeNode(
 
 
 
+function refreshSelected(){
 
 
-// =====================
-// 添加tag
-// =====================
+let box=document
+.getElementById(
+"selected-tags"
+);
 
 
-function addTag(
-    tag,
-    chinese
-){
-
-
-    if(
-        selectedTags.some(
-            x=>x.tag===tag
-        )
-    ){
-
-        return;
-
-    }
+box.innerHTML="";
 
 
 
-    selectedTags.push({
-
-        tag:tag,
-
-        chinese:chinese
-
-    });
+selected.forEach(x=>{
 
 
+let div=document.createElement(
+"div"
+);
 
-    updateSelected();
+
+div.className=
+"selected-item";
 
 
-}
-
+div.innerText=x.chinese;
 
 
 
+div.onclick=()=>{
+
+
+selected=
+selected.filter(
+a=>a.tag!==x.tag
+);
+
+
+refreshSelected();
+
+
+};
 
 
 
+box.appendChild(div);
 
 
-// =====================
-// 右侧显示
-// =====================
-
-function updateSelected(){
-
-
-    let box =
-    document.getElementById(
-        "selected-tags"
-    );
-
-
-    box.innerHTML="";
+});
 
 
 
-    selectedTags.forEach(item=>{
-
-
-        let div =
-        document.createElement(
-            "div"
-        );
-
-
-        div.className=
-        "selected-item";
-
-
-
-        div.innerText=
-        item.chinese;
-
-
-
-        div.onclick=()=>{
-
-
-            selectedTags =
-            selectedTags.filter(
-                x=>
-                x.tag!==item.tag
-            );
-
-
-            updateSelected();
-
-
-        };
-
-
-
-        box.appendChild(div);
-
-
-
-    });
-
-
-
-    document
-    .getElementById(
-        "count"
-    )
-    .innerText=
-    selectedTags.length;
-
+document
+.getElementById(
+"count"
+)
+.innerText=
+selected.length;
 
 
 }
@@ -469,87 +406,128 @@ function updateSelected(){
 // =====================
 
 
+function buildSearch(){
+
+
+searchIndex=[];
+
+
+scan(
+data
+);
+
+
+}
+
+
+
+function scan(obj){
+
+
+Object.entries(obj)
+.forEach(
+([k,v])=>{
+
+
+if(
+typeof v==="string"
+){
+
+
+searchIndex.push({
+
+tag:k,
+
+chinese:v
+
+});
+
+
+}
+
+else{
+
+
+scan(v);
+
+
+}
+
+
+});
+
+
+}
+
+
+
+
 document
 .getElementById(
 "search-input"
 )
-.addEventListener(
-"input",
-e=>{
+.oninput=function(){
 
 
-    let key =
-    e.target.value.trim();
+let box=document
+.getElementById(
+"search-results"
+);
 
 
-    let box =
-    document.getElementById(
-    "search-results"
-    );
+box.innerHTML="";
 
 
-    box.innerHTML="";
+let key=this.value;
 
 
 
-    if(!key)
-        return;
+if(!key)
+return;
 
 
 
-    searchIndex
-
-    .filter(
-        x=>
-        x.chinese.includes(key)
-    )
-
-    .slice(0,50)
-
-    .forEach(item=>{
+searchIndex
+.filter(
+x=>x.chinese.includes(key)
+)
+.slice(0,30)
+.forEach(x=>{
 
 
-        let div =
-        document.createElement(
-        "div"
-        );
+let div=document.createElement(
+"div"
+);
 
 
-        div.className=
-        "search-item";
+div.className="item";
 
 
-        div.innerText=
-        item.chinese;
+div.innerText=x.chinese;
 
 
 
-        div.onclick=()=>{
+div.onclick=()=>{
 
 
-            addTag(
-
-                item.tag,
-
-                item.chinese
-
-            );
+addTag(
+x.tag,
+x.chinese
+);
 
 
-        };
+};
 
 
 
-        box.appendChild(div);
-
-
-
-    });
+box.appendChild(div);
 
 
 
 });
 
+
+};
 
 
 
@@ -570,27 +548,25 @@ document
 .onclick=()=>{
 
 
-    let text =
-    selectedTags
-
-    .map(
-        x=>
-        x.tag.replaceAll(
-        "_",
-        " "
-        )
-    )
-
-    .join(", ");
+let text=
+selected
+.map(
+x=>x.tag.replaceAll(
+"_",
+" "
+)
+)
+.join(", ");
 
 
 
-    navigator.clipboard.writeText(
-        text
-    );
+navigator.clipboard.writeText(
+text
+);
 
 
 };
+
 
 
 
@@ -611,9 +587,10 @@ document
 .onclick=()=>{
 
 
-    selectedTags=[];
+selected=[];
 
-    updateSelected();
+
+refreshSelected();
 
 
 };
@@ -630,47 +607,82 @@ document
 // 随机
 // =====================
 
-function loadRandomCategories(){
+
+function loadRandom(){
 
 
-    let box =
-    document.getElementById(
-    "random-categories"
-    );
+let box=document
+.getElementById(
+"random-categories"
+);
 
 
-    box.innerHTML="";
+Object.keys(data)
+.forEach(k=>{
 
 
-
-    Object.keys(tagData)
-    .forEach(key=>{
-
-
-        let label =
-        document.createElement(
-        "label"
-        );
-
-
-        label.className=
-        "random-item";
+let label=document.createElement(
+"label"
+);
 
 
 
-        label.innerHTML=
-        `
-        <input type="checkbox"
-        value="${key}">
-        ${key}
-        `;
+label.innerHTML=
+`
+<input type="checkbox"
+value="${k}">
+${k}
+<br>
+`;
 
 
 
-        box.appendChild(label);
+box.appendChild(label);
 
 
-    });
+});
+
+
+}
+
+
+
+function collectTags(obj,arr){
+
+
+if(isTagObject(obj)){
+
+
+Object.entries(obj)
+.forEach(
+([tag,chinese])=>{
+
+
+arr.push({
+
+tag,
+
+chinese
+
+});
+
+
+});
+
+
+}
+
+else{
+
+
+Object.values(obj)
+.forEach(
+v=>
+collectTags(v,arr)
+);
+
+
+}
 
 
 }
@@ -685,107 +697,50 @@ document
 .onclick=()=>{
 
 
-    let checked =
-    [
-    ...document.querySelectorAll(
-    "#random-categories input:checked"
-    )
-    ];
+let checked=
+[
+...document.querySelectorAll(
+"#random-categories input:checked"
+)
+];
 
 
 
-    checked.forEach(c=>{
+checked.forEach(c=>{
 
 
-        let list=[];
+let arr=[];
 
 
-
-        recursiveCollect(
-
-            tagData[c.value],
-
-            list
-
-        );
-
-
-
-        if(list.length){
-
-
-            let item =
-            list[
-            Math.floor(
-            Math.random()*list.length
-            )
-            ];
-
-
-
-            addTag(
-
-                item.tag,
-
-                item.chinese
-
-            );
-
-
-        }
-
-
-
-    });
-
-
-
-};
-
-
-
-
-
-
-function recursiveCollect(
-obj,
+collectTags(
+data[c.value],
 arr
-){
+);
 
 
-    Object.entries(obj)
-    .forEach(([k,v])=>{
+
+if(arr.length){
 
 
-        if(
-            typeof v==="string"
-        ){
+let r=
+arr[
+Math.floor(
+Math.random()*arr.length
+)
+];
 
 
-            arr.push({
 
-                tag:k,
-
-                chinese:v
-
-            });
-
-
-        }
-
-        else{
-
-
-            recursiveCollect(
-                v,
-                arr
-            );
-
-
-        }
-
-
-    });
+addTag(
+r.tag,
+r.chinese
+);
 
 
 }
+
+
+});
+
+
+};
