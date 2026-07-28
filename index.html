@@ -3,41 +3,90 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Tag选择器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tag Selector</title>
 
     <link rel="stylesheet" href="style.css">
-
 </head>
 
 
 <body>
 
 
-    <h1>AI Tag 中文选择器</h1>
+<div class="container">
 
 
-    <div id="container">
+    <!-- 左侧分类 -->
+    <div class="sidebar">
+
+        <h2>分类</h2>
+
+        <div id="categories"></div>
+
+    </div>
 
 
-        <div id="category"></div>
+
+    <!-- 中间标签 -->
+    <div class="tags-panel">
+
+        <h2 id="category-title">
+            请选择分类
+        </h2>
 
 
-        <div id="tags"></div>
+        <div id="tags">
+
+        </div>
+
+    </div>
 
 
-        <div id="preview">
-            <h3>说明</h3>
-            <div id="preview-content">
-                鼠标移动到标签查看说明
-            </div>
+
+
+    <!-- 右侧选择 -->
+    <div class="selected-panel">
+
+
+        <h2>
+            已选择 Tags
+            <span id="count">
+                0
+            </span>
+        </h2>
+
+
+
+        <div id="selected-tags">
+
+        </div>
+
+
+
+        <div class="buttons">
+
+            <button id="copy-btn">
+                复制 Prompt
+            </button>
+
+
+            <button id="clear-btn">
+                清空
+            </button>
+
         </div>
 
 
     </div>
 
 
-    <script src="app.js"></script>
 
+</div>
+
+
+
+<script src="app.js"></script>
 
 </body>
 
