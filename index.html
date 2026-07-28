@@ -18,9 +18,9 @@
 <div class="container">
 
 
-<!-- 一级分类 -->
+<!-- 左侧大类 -->
 
-<div class="panel">
+<div class="left panel">
 
 <h2>分类</h2>
 
@@ -32,10 +32,11 @@
 
 <h2>随机</h2>
 
-<div id="random-categories"></div>
+<div id="random-box"></div>
+
 
 <button id="random-btn">
-每类随机一个
+随机生成
 </button>
 
 
@@ -45,42 +46,31 @@
 
 
 
-<!-- 子分类 -->
+<!-- 中间内容 -->
 
-<div class="panel">
-
-<h2>子分类</h2>
-
-<div id="subcategories"></div>
+<div class="middle panel">
 
 
-</div>
+<div class="top-search">
 
-
-
-
-
-
-<!-- Tags -->
-
-<div class="panel">
-
-
-<h2>Tags</h2>
-
-
-<input 
-id="search-input"
-placeholder="中文搜索..."
+<input
+id="search"
+placeholder="搜索中文tag..."
 >
 
 
-<div id="search-results"></div>
+<div id="search-result"></div>
+
+</div>
 
 
 
-<div id="tags"></div>
+<h2 id="title">
+请选择分类
+</h2>
 
+
+<div id="content"></div>
 
 
 </div>
@@ -90,42 +80,40 @@ placeholder="中文搜索..."
 
 
 
+<!-- 右侧 -->
 
-<!-- 已选择 -->
-
-<div class="panel selected">
+<div class="right panel">
 
 
 <h2>
 已选择
-<span id="count">0</span>
+<span id="count">
+0
+</span>
 </h2>
 
 
-<div id="selected-tags"></div>
+<div id="selected"></div>
 
 
-
-<button id="copy-btn">
-复制 Prompt
+<button id="copy">
+复制
 </button>
 
 
-<button id="clear-btn">
+<button id="clear">
 清空
 </button>
 
 
-
 </div>
 
 
-
 </div>
+
 
 
 <script src="app.js"></script>
-
 
 </body>
 
