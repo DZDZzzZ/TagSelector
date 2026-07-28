@@ -1,22 +1,24 @@
 *{
 
-    box-sizing:border-box;
+box-sizing:border-box;
 
 }
 
 
+
 body{
 
-    margin:0;
+margin:0;
 
-    font-family:
-    "Microsoft YaHei",
-    Arial,
-    sans-serif;
+font-family:
 
-    background:#1e1e1e;
+"Microsoft YaHei",
+Arial,
+sans-serif;
 
-    color:white;
+background:#1e1e1e;
+
+color:white;
 
 }
 
@@ -24,11 +26,9 @@ body{
 
 .container{
 
+display:flex;
 
-    display:flex;
-
-    height:100vh;
-
+height:100vh;
 
 }
 
@@ -38,16 +38,13 @@ body{
 
 .sidebar{
 
+width:260px;
 
-    width:250px;
+border-right:1px solid #444;
 
-    border-right:
-    1px solid #444;
+padding:15px;
 
-    padding:15px;
-
-    overflow-y:auto;
-
+overflow-y:auto;
 
 }
 
@@ -55,17 +52,15 @@ body{
 
 .category{
 
+padding:10px;
 
-    padding:10px;
+margin-bottom:8px;
 
-    margin-bottom:8px;
+background:#333;
 
-    background:#333;
+border-radius:6px;
 
-    border-radius:6px;
-
-    cursor:pointer;
-
+cursor:pointer;
 
 }
 
@@ -73,9 +68,43 @@ body{
 
 .category:hover{
 
-    background:#555;
+background:#555;
 
 }
+
+
+
+
+
+hr{
+
+border-color:#444;
+
+margin:20px 0;
+
+}
+
+
+
+
+.random-item{
+
+display:block;
+
+margin:8px 0;
+
+cursor:pointer;
+
+}
+
+
+
+.random-item input{
+
+margin-right:8px;
+
+}
+
 
 
 
@@ -85,13 +114,11 @@ body{
 
 .tags-panel{
 
+flex:1;
 
-    flex:1;
+padding:20px;
 
-    padding:20px;
-
-    overflow-y:auto;
-
+overflow-y:auto;
 
 }
 
@@ -99,13 +126,11 @@ body{
 
 #tags{
 
+display:flex;
 
-    display:flex;
+flex-wrap:wrap;
 
-    flex-wrap:wrap;
-
-    gap:10px;
-
+gap:10px;
 
 }
 
@@ -113,17 +138,15 @@ body{
 
 .tag{
 
+padding:8px 14px;
 
-    padding:8px 14px;
+background:#333;
 
-    background:#333;
+border-radius:8px;
 
-    border-radius:8px;
+cursor:pointer;
 
-    cursor:pointer;
-
-    user-select:none;
-
+user-select:none;
 
 }
 
@@ -131,7 +154,7 @@ body{
 
 .tag:hover{
 
-    background:#555;
+background:#555;
 
 }
 
@@ -139,10 +162,11 @@ body{
 
 .tag.selected{
 
-
-    background:#1976d2;
+background:#1976d2;
 
 }
+
+
 
 
 
@@ -152,18 +176,15 @@ body{
 
 .selected-panel{
 
+width:350px;
 
-    width:350px;
+padding:20px;
 
-    padding:20px;
+border-left:1px solid #444;
 
-    border-left:
-    1px solid #444;
+display:flex;
 
-    display:flex;
-
-    flex-direction:column;
-
+flex-direction:column;
 
 }
 
@@ -171,11 +192,9 @@ body{
 
 #selected-tags{
 
+flex:1;
 
-    flex:1;
-
-    overflow-y:auto;
-
+overflow-y:auto;
 
 }
 
@@ -183,19 +202,17 @@ body{
 
 .selected-item{
 
+background:#333;
 
-    background:#333;
+padding:10px;
 
-    padding:10px;
+margin-bottom:8px;
 
-    margin-bottom:8px;
+border-radius:6px;
 
-    border-radius:6px;
+cursor:pointer;
 
-    cursor:pointer;
-
-    word-break:break-all;
-
+word-break:break-all;
 
 }
 
@@ -203,21 +220,19 @@ body{
 
 .selected-item:hover{
 
-
-    background:#a33;
-
+background:#a33;
 
 }
 
 
 
+
+
 .buttons{
 
+display:flex;
 
-    display:flex;
-
-    gap:10px;
-
+gap:10px;
 
 }
 
@@ -225,23 +240,21 @@ body{
 
 button{
 
+width:100%;
 
-    flex:1;
+padding:12px;
 
-    padding:12px;
+border:none;
 
-    border:none;
+border-radius:8px;
 
-    border-radius:8px;
+cursor:pointer;
 
-    cursor:pointer;
+background:#1976d2;
 
-    background:#1976d2;
+color:white;
 
-    color:white;
-
-    font-size:16px;
-
+font-size:16px;
 
 }
 
@@ -249,8 +262,6 @@ button{
 
 button:hover{
 
-
-    opacity:0.8;
-
+opacity:0.8;
 
 }
