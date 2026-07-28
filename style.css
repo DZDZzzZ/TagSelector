@@ -7,15 +7,15 @@ body{
 
 margin:0;
 
-font-family:
-"Microsoft YaHei",
-Arial;
-
 background:#1e1e1e;
 
 color:white;
 
+font-family:
+Microsoft YaHei;
+
 }
+
 
 
 .container{
@@ -28,104 +28,15 @@ height:100vh;
 
 
 
+.panel{
 
-.sidebar{
-
-width:280px;
+width:25%;
 
 padding:15px;
 
 border-right:1px solid #444;
 
-overflow-y:auto;
-
-}
-
-
-
-#search-input{
-
-width:100%;
-
-padding:10px;
-
-border-radius:6px;
-
-border:none;
-
-margin-bottom:10px;
-
-}
-
-
-
-#search-results{
-
-max-height:300px;
-
 overflow:auto;
-
-}
-
-
-
-
-.search-item{
-
-padding:8px;
-
-background:#333;
-
-margin-bottom:5px;
-
-border-radius:5px;
-
-cursor:pointer;
-
-}
-
-
-
-.search-item:hover{
-
-background:#555;
-
-}
-
-
-
-
-
-.category{
-
-padding:10px;
-
-background:#333;
-
-margin-bottom:8px;
-
-border-radius:6px;
-
-cursor:pointer;
-
-}
-
-
-
-.category:hover{
-
-background:#555;
-
-}
-
-
-
-
-.random-item{
-
-display:block;
-
-margin:8px 0;
 
 }
 
@@ -135,15 +46,17 @@ button{
 
 width:100%;
 
-padding:12px;
+padding:10px;
+
+margin-top:10px;
 
 background:#1976d2;
 
+border:0;
+
+border-radius:6px;
+
 color:white;
-
-border:none;
-
-border-radius:8px;
 
 cursor:pointer;
 
@@ -151,38 +64,35 @@ cursor:pointer;
 
 
 
+button:hover{
 
-.tags-panel{
-
-flex:1;
-
-padding:20px;
-
-overflow:auto;
+opacity:.8;
 
 }
 
 
 
-#tags{
+input{
 
-display:flex;
+width:100%;
 
-flex-wrap:wrap;
+padding:10px;
 
-gap:10px;
+margin-bottom:10px;
 
 }
 
 
 
-.tag{
+.item{
 
-padding:8px 14px;
+padding:10px;
 
 background:#333;
 
-border-radius:8px;
+margin-bottom:6px;
+
+border-radius:6px;
 
 cursor:pointer;
 
@@ -190,7 +100,7 @@ cursor:pointer;
 
 
 
-.tag:hover{
+.item:hover{
 
 background:#555;
 
@@ -198,43 +108,20 @@ background:#555;
 
 
 
-.tag.selected{
 
-background:#1976d2;
+.folder::before{
 
-}
-
-
-
-
-
-
-
-.selected-panel{
-
-width:350px;
-
-padding:20px;
-
-border-left:1px solid #444;
-
-display:flex;
-
-flex-direction:column;
+content:"📁 ";
 
 }
 
 
 
+.tag::before{
 
-#selected-tags{
-
-flex:1;
-
-overflow:auto;
+content:"🏷 ";
 
 }
-
 
 
 
@@ -244,11 +131,11 @@ padding:10px;
 
 background:#333;
 
-margin-bottom:8px;
-
-border-radius:6px;
+margin-bottom:6px;
 
 cursor:pointer;
+
+border-radius:6px;
 
 }
 
@@ -262,62 +149,17 @@ background:#933;
 
 
 
-.buttons{
+.selected{
 
-display:flex;
-
-gap:10px;
-
-}
-.tree-item{
-
-    margin:5px 0;
+width:25%;
 
 }
 
 
-.tree-folder{
+#selected-tags{
 
-    cursor:pointer;
+height:80%;
 
-    padding:5px;
-
-    user-select:none;
-
-}
-
-
-
-.tree-folder:hover{
-
-    background:#444;
-
-}
-
-
-
-.tree-children{
-
-    margin-left:20px;
-
-}
-
-
-
-.tree-tag{
-
-    padding:6px;
-
-    margin-left:20px;
-
-    cursor:pointer;
-
-}
-
-
-
-.tree-tag:hover{
-
-    background:#555;
+overflow:auto;
 
 }
